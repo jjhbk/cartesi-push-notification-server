@@ -12,12 +12,7 @@ app.use(cors());
 const PORT = 3009;
 const PKEY = `0x${process.env.CHANNEL_PRIVATE_KEY}`;
 const signer = new ethers.Wallet(PKEY);
-const {
-  PartialNotice,
-  getNotices,
-  partialVoucher,
-  getVouchers,
-} = require("@mugen-builders/client");
+const { getNotices, getVouchers } = require("@mugen-builders/client");
 const apiURL = "http://localhost:10002/graphql";
 let notices = [];
 let vouchers = [];
@@ -196,6 +191,12 @@ const main = async () => {
     `eip155:11155111:${pushChannelAdress}` // channel address in CAIP format
   );
 
+  /** To-do
+   * add a check to see if proofs are generated and send notifications for only those notices/vouchers which have a valid proof attached
+   */
+
+  //query cartesi-node to see if new notices are generated
+
   if (_notices.length > notices.length) {
     console.log("sending notification for new Notice");
     notices = _notices;
@@ -208,6 +209,8 @@ const main = async () => {
     });
     console.log("counter is", counter, "response is", response);
   }
+
+  //query cartesi-node to see if new notices are generated
 
   if (_vouchers.length > vouchers.length) {
     console.log("sending notification for new Voucher");
@@ -223,6 +226,7 @@ const main = async () => {
   counter = counter++;
 };
 
+// Query every 5 seconds
 setInterval(main, 5000);
 
 /**
